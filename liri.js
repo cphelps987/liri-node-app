@@ -4,10 +4,6 @@
 
 //-------------twitter-------------------/
 
-var index2 = process.argv[2];
-var index3 = process.argv[3];
-
-
 // Twitter variables
 var twitterKeys = require('./keys.js');
 //console.log(keys);
@@ -16,6 +12,26 @@ var Twitter = require('twitter');
 var client = new Twitter(
     twitterKeys
 );
+
+var spotifyKeys = require('./spotifyKeys');
+
+var Spotify = require('node-spotify-api');
+
+var spotify = new Spotify(
+    spotifyKeys
+);
+
+var request = require("request");
+
+var fs = require("fs");
+
+var nodeArgs = process.argv[];
+
+var index2 = process.argv[2];
+var index3 = process.argv[3];
+
+
+
 //console.log(client);
 // if statement where the 2nd index is "my-tweets"
 if (index2 === "my-tweets") {
@@ -38,13 +54,7 @@ if (index2 === "my-tweets") {
         }
     });
 }
-var spotifyKeys = require('./spotifyKeys');
 
-var Spotify = require('node-spotify-api');
-
-var spotify = new Spotify(
-        spotifyKeys
-);
 //console.log(spotifyKeys);
 
 if (index2 === "spotify-this-song") {
@@ -59,7 +69,7 @@ if (index2 === "spotify-this-song") {
            // console.log(data.tracks.items[i]);
 
             //for (var j =0; j < data.tracks.items[i].album.artist.length; j++) {
-                console.log(data.tracks.items[0].album.artists[j].name);
+               // console.log(data.tracks.items[0].album.artists[j].name);
 
            /* }
         }*/
@@ -68,9 +78,7 @@ if (index2 === "spotify-this-song") {
     });
 }
 
-var request = require("request");
 
-var nodeArgs = process.argv;
 
 // Create an empty variable for holding the movie name
 var movieName = "";
@@ -100,27 +108,32 @@ if (index2 === "movie-this") {
 
     request(queryUrl, function(error, response, body) {
 
-       // console.log(response);
+       console.log(response);
         if (error) throw error;
 
         if (!error && response.statusCode === 200) {
 
-            console.log("Release Year: " + JSON.parse(body).Plot);
+            console.log("Title: " + JSON.parse(body).Title);
+            console.log("Release Year: " + JSON.parse(body).Year);
+            console.log("Release Year: " + JSON.parse(body).Year);
+            console.log("IMDB: " + JSON.parse(body).Year);
+            console.log("Country: " + JSON.parse(body).Country);
+            console.log("Language: " + JSON.parse(body).Language);
+            console.log("Plot: " + JSON.parse(body).Plot);
+            console.log("Actors: " + JSON.parse(body).Actors);
+            console.log("Rotten Tomatoes URL: " + JSON.parse(body).Year);
         }
     });
 }
 
-/*
-var movieName = index3;
 
-var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=40e9cece";
 
-console.log(queryUrl);
+if (index2 === "do-what-it-says") {
+    fs.readFile("random.txt", "utf8", function(err, data) {
+    if (err)
+        throw error;
+    if (data);
+    console.log(data);
 
-request(queryUrl, function (error, response, body) {
-
-    if (error) throw error
-
-    console.log("plot " + JSON.parse(body).Plot)
-
-});*/
+    })
+}
