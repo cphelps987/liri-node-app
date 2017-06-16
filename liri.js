@@ -1,40 +1,69 @@
-/**
- * Created by courtneyphelps on 6/15/17.
- */
+/*Created by courtneyphelps on 6/15/17.*/
 
-//-------------twitter-------------------/
 
 // Twitter variables
 var twitterKeys = require('./keys.js');
-//console.log(keys);
+//console.log("twitter keys",keys);
 var Twitter = require('twitter');
 // Twitter package for user based authentication:
 var client = new Twitter(
     twitterKeys
 );
-
+// Spotify variables
 var spotifyKeys = require('./spotifyKeys');
-
+//console.log("spotifyKeys", spotifyKeys)
 var Spotify = require('node-spotify-api');
-
+// spotify package for user based authentication:
 var spotify = new Spotify(
     spotifyKeys
 );
-
+//OMDB API
 var request = require("request");
+var nodeArgs = process.argv;
+var movieName = "";
 
 var fs = require("fs");
 
-var nodeArgs = process.argv[];
 
-var index2 = process.argv[2];
-var index3 = process.argv[3];
+var action = process.argv[2];
+var userInput = process.argv[3];
 
+switch (action) {
+    case "t":
+    case "-t":
+    case "tweet":
+    case "twitter":
+    case "tweets":
+    case "my-tweets":
+        tweets();
+        break;
+    case "s":
+    case "-s":
+    case "song":
+    case "spotify":
+    case "spotify-song":
+    case "spotify-this-song":
+        spotifyThis();
+        break;
+    case "m":
+    case "-m":
+    case "movie":
+    case "this-movie":
+        movie();
+        break;
+    case "d":
+    case "-d":
+    case "do":
+    case "do-it":
+    case "do-what-it-says":
+        random();
+        break;
+    default:
+        console.log("Please log (my-tweets, -t, t, tweet, twitter, tweets), (spotify-this-song, -s, s, song, spotify, spotify-song), (this-movie, -m, m, movie) OR (do-what-it-says, -d, d, do, do-it)");
+        break;
+}
 
-
-//console.log(client);
-// if statement where the 2nd index is "my-tweets"
-if (index2 === "my-tweets") {
+function tweets(){
     // Getting my tweets
     var params = {screen_name: 'LIRIBot987'};
     client.get('statuses/user_timeline', params, function (error, tweets, response) {
@@ -53,82 +82,80 @@ if (index2 === "my-tweets") {
             console.log(tweets[i].created_at);
         }
     });
+
 }
 
-//console.log(spotifyKeys);
+function spotifyThis() {
 
-if (index2 === "spotify-this-song") {
-    spotify.search({type: 'track', query: index3}, function(err, data) {
+    spotify.search({type: 'track', query: userInput}, function(err, data) {
 
-        if (err) {
-            return console.log('Error occurred: ' + err);
+       // console.log(data.tracks)
+
+        for (var tracks in data){
+
+            var obj = data[tracks];
+
+            var final = obj.items[0].artists
+
+            console.log(final)
         }
-       // console.log(data);
 
-       // for (var i = 0; i < data.tracks.items.length; i++) {
-           // console.log(data.tracks.items[i]);
+        for (var name in data) {
 
-            //for (var j =0; j < data.tracks.items[i].album.artist.length; j++) {
-               // console.log(data.tracks.items[0].album.artists[j].name);
+            var objName = data[name];
 
-           /* }
-        }*/
+            var finalName = obj.items[0].name
 
-        console.log(data.tracks.items[0].album[0].artists[0].name);
+            console.log(finalName)
+        }
+
+        for (var album in data) {
+
+            var albumName = data[album];
+
+            var finalAlbum = obj.items[0].album.name
+
+            console.log(finalAlbum)
+        }
     });
 }
 
 
 
 // Create an empty variable for holding the movie name
-var movieName = "";
+
 
 // Loop through all the words in the node argument
 // And do a little for-loop magic to handle the inclusion of "+"s
-if (index2 === "movie-this") {
-    for (var i = 2; i < nodeArgs.length; i++) {
-
-        if (i > 2 && i < nodeArgs.length) {
-
-            movieName = movieName + "+" + nodeArgs[i];
-
-        }
-
-        else {
-
-            movieName += nodeArgs[i];
-
-        }
-    }
+function movie() {
 
     // Then run a request to the OMDB API with the movie specified
-    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=40e9cece";
+    var queryUrl = "http://www.omdbapi.com/?t=" + userInput + "&y=&plot=short&apikey=40e9cece";
 
     //console.log(queryUrl);
 
     request(queryUrl, function(error, response, body) {
 
-       console.log(response);
+       //console.log(response);
         if (error) throw error;
 
         if (!error && response.statusCode === 200) {
 
             console.log("Title: " + JSON.parse(body).Title);
             console.log("Release Year: " + JSON.parse(body).Year);
-            console.log("Release Year: " + JSON.parse(body).Year);
-            console.log("IMDB: " + JSON.parse(body).Year);
+            console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
             console.log("Country: " + JSON.parse(body).Country);
             console.log("Language: " + JSON.parse(body).Language);
             console.log("Plot: " + JSON.parse(body).Plot);
             console.log("Actors: " + JSON.parse(body).Actors);
-            console.log("Rotten Tomatoes URL: " + JSON.parse(body).Year);
+           // console.log("Rotten Tomatoes URL: " + JSON.parse(body).Year); --doesnt have it
         }
     });
 }
 
 
 
-if (index2 === "do-what-it-says") {
+function random() {
     fs.readFile("random.txt", "utf8", function(err, data) {
     if (err)
         throw error;
