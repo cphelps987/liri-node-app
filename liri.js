@@ -106,7 +106,7 @@ function spotifyThis() {
 
             var finalName = obj.items[0].name
 
-            console.log(finalName)
+            console.log("Artist: "+ finalName)
         }
 
         for (var album in data) {
@@ -115,7 +115,7 @@ function spotifyThis() {
 
             var finalAlbum = obj.items[0].album.name
 
-            console.log(finalAlbum)
+            console.log("Album: " + finalAlbum)
         }
     });
 }
